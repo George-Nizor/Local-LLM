@@ -1,0 +1,21 @@
+# Ignore virtual environment folder
+chatbot/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Environment and dependency management files
+.env
+.venv
+Pipfile
+Pipfile.lock
+poetry.lock
+
+# VS Code settings (if using VS Code)
+.vscode/
