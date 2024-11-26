@@ -4,6 +4,30 @@ import pyttsx3
 import speech_recognition as sr
 engine = pyttsx3.init()
 
+class TextToSpeechModel:
+
+    def __init__(self, engine, model, template):
+        self.model = model
+        self.engine = engine
+        self.prompt = ChatPromptTemplate(template)
+        self.chain = prompt | model
+        self.voices = engine.getProperty('voices')
+        
+    def handle_conversation():
+        context = ""
+        print("Welcome to the AI ChatBot, Type 'exit' to quit")
+        while True:
+            user_input = speech_to_text()
+            if user_input.lower() == "exit":
+                break
+        result = chain.invoke({"context":context,"question":user_input})
+        engine.say(result)
+        print("Bot: ", result)
+        engine.runAndWait()
+        engine.stop()
+        context += f"\nUser: {user_input}\nAI: {result}"
+
+
 template = """
 Answer the question below.
 
@@ -24,7 +48,7 @@ def handle_conversation():
     context = ""
     print("Welcome to the AI ChatBot, Type 'exit' to quit")
     while True:
-        user_input = input("You: ")
+        user_input = speech_to_text()
         if user_input.lower() == "exit":
             break
         
@@ -37,35 +61,18 @@ def handle_conversation():
 
 def speech_to_text():
     r = sr.Recognizer()
-
-    while(1):    
-    # Exception handling to handle
-    # exceptions at the runtime
+    with sr.Microphone() as source:
+        print("Say something...")
+        audio = r.listen(source)
+        text = r.recognize_google(audio)
         try:
-            # use the microphone as source for input.
-            with sr.Microphone() as source2:
-                
-                # wait for a second to let the recognizer
-                # adjust the energy threshold based on
-                # the surrounding noise level 
-                r.adjust_for_ambient_noise(source2, duration=0.2)
-                
-                #listens for the user's input 
-                audio2 = r.listen(source2)
-                
-                # Using google to recognize audio
-                MyText = r.recognize_google(audio2)
-                MyText = MyText.lower()
-
-                print(f"Did you say: {MyText}")
-
-        except sr.RequestError as e:
-            print(f"Could not request results;{e}")
-            
+            print("You said: " + r.recognize_google(audio))
+            return text
+        except sr.RequestError:
+            print("API unavailable")
         except sr.UnknownValueError:
-            print("Unknown Error occurred")
+            print("Unable to recognize speech")
 
 
 if __name__ == "__main__":
-    #handle_conversation()
-    speech_to_text()
+    handle_conversation()    
